@@ -1,0 +1,39 @@
+{
+  "name": "CarFixAI Backend",
+  "runtime": "nodejs",
+  "version": "18",
+  "build": {
+    "outputDirectory": "backend",
+    "commands": [
+      "cd backend",
+      "npm install",
+      "npx prisma generate"
+    ]
+  },
+  "deploy": {
+    "bootstrapCommand": "npx prisma migrate deploy",
+    "startCommand": "node src/server.js"
+  },
+  "environmentVariables": [
+    {
+      "key": "DATABASE_URL",
+      "required": true
+    },
+    {
+      "key": "JWT_SECRET",
+      "required": true
+    },
+    {
+      "key": "STRIPE_SECRET_KEY",
+      "required": false
+    },
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "PORT",
+      "value": "3000"
+    }
+  ]
+}
