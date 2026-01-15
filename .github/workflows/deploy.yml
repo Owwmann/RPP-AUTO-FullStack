@@ -1,0 +1,56 @@
+name: 🚀 Deploy to IONOS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_KEY }}
+          
+      - name: Add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H access5019379793.webspacehost.com >> ~/.ssh/known_hosts
+          
+      - name: Deploy to Server
+        run: |
+          ssh u102176229@access5019379793.webspacehost.com << 'EOF'
+          set -e
+          cd /kunden/homepages/39/d4299589649/htdocs/RPP_AUTO
+          
+          # Pull latest code
+          [ -d ".git" ] && git pull origin main || (git init && git remote add origin https://github.com/Owwmann/RPP-AUTO-FullStack.git && git pull origin main)
+          
+          # Setup Python
+          cd rpp-auto-backend
+          [ ! -d "venv" ] && python3 -m venv venv
+          source venv/bin/activate
+          
+          # Install dependencies
+          pip install -q --upgrade pip
+          pip install -q -r requirements.txt
+          
+          # Restart app
+          killall -9 uvicorn 2>/dev/null || true
+          nohup uvicorn main:app --host 0.0.0.0 --port 8080 --workers 2 > /tmp/rpp_auto.log 2>&1 &
+          echo $! > /tmp/rpp_auto.pid
+          
+          echo "Deployment complete!"
+          EOF
+          
+      - name: Health Check
+        run: |
+          sleep 10
+          curl -f http://s1080048923.onlinehome.us/api/health || exit 1
