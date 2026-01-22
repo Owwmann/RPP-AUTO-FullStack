@@ -40,12 +40,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: mobile/package-lock.json
 
       - name: 📦 Install Dependencies
         working-directory: ./mobile
-        run: npm ci
+        run: npm install
 
       - name: 🏗 Setup Expo
         uses: expo/expo-github-action@v8
