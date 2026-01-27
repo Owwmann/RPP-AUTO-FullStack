@@ -43,6 +43,17 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow RPP AUTO to use your location"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "networkInspector": false,
+            "usesCleartextTraffic": false,
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
+        }
       ]
     ]
   }
